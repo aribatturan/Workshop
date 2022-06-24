@@ -1,0 +1,63 @@
+version: '3.7'
+
+networks:
+  mynet:
+
+volumes:
+  dbdata: #named volume
+  redisvol:
+
+services:
+
+  webserver:
+    container_name: webserver
+    hostname: webserver
+    image: nginx:stable-alpine
+    ports:
+     - "80:80"
+    restart: always
+    volumes:
+      - ./nginx-conf:/etc/nginx/conf.d
+      - ./demo-2.0.2:/var/www/
+    networks:
+     - mynet
+
+  db:
+    image: mysql:8
+    container_name: db
+    hostname: db
+    restart: always
+    env_file: .env
+    environment:
+      MYSQL_DATABASE: wordpress
+    volumes:
+      - dbdata:/var/lib/mysql
+      #- ./db_vol:/var/lib/mysql
+    networks:
+      - mynet
+    command: '--default-authentication-plugin=mysql_native_password' #PHP ve dolayısıyla WordPress imajımız MySQL'in daha
+    #yeni kimlik doğrulama varsayılanını desteklemeyeceğinden, 
+    #uygulama veritabanı kullanıcımızın kimliğini doğrulamak için bu ayarlamayı yapmalıyız.
+
+  symphp:
+    container_name: symphp
+    hostname: symphp
+    build: .
+    env_file: .env
+    volumes:
+      - ./demo-2.0.2:/var/www/
+    networks:
+     - mynet
+
+  redis:
+    container_name: redis
+    image: redis:7
+    restart: always
+    volumes:
+      - redisvol:/data
+    ports:
+      - "6379:6379"
+    networks:
+     - mynet
+
+ 
