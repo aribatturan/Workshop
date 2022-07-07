@@ -1,17 +1,13 @@
 FROM nginx:latest
 # label ile de key value pair olarak bu imajla ilgili bilgileri giriyoruz. her iki talimat da imajın içindeki sistemle alakalı değil.
 # her ikisi de imajın metadatasında saklanıyor. imajla alakali bilgiler. 
-LABEL maintainer="ribatturan"
-LABEL version="1.0"
-LABEL name="hello-docker"
+LABEL maintainer="ribatturan" version="1.0" name="hello-docker"
 
 # bir adet env variable tanımlıyoruz. Daha sonra bunu runtime'da değiştireceğiz
 ENV KULLANICI="Dunyali"
 
 # Uygulama depolarından mevcut paketlerin en son listesini çekip güncelliyoruz. 
-RUN apt-get update
-
-RUN apt-get install curl -y
+RUN apt-get update && apt-get install curl -y
 
 # nginx web sayfalarını /usr/share/nginx/html folder'ında barındırıyor. O nedenle bu folder'a geçiyoruz
 WORKDIR /usr/share/nginx/html
